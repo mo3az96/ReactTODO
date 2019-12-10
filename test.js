@@ -1,31 +1,32 @@
-let tag_id_arr = [];
-let tags_arr = [];
-const { task, date, time, done, assignTo } = doc.data();
-//join table
-this.tasks_tags.where('task_id', '==', doc.id).get().then((snapshot) => {
-    snapshot.forEach(doc => {
-        tag_id_arr.push(doc.data().tag_id);
-    });
-    this.tags.get().then((snapshot) => {
-
-        snapshot.forEach(doc => {
-
-            if (tag_id_arr.includes(doc.id)) {
-
-                tags_arr.push(doc.data().tag);
+<Modal finalFocusRef={finalRef} isOpen={isOpen} onClose={onClose}>
+    <ModalOverlay />
+    <ModalContent>
+        <ModalHeader>Modal Title</ModalHeader>
+        {/* <ModalCloseButton /> */}
+        <ModalBody>
+            {
+                [...new Set(comments)].map(comment => {
+                    return (
+                        <Flex key={Math.random()} borderBottom="1px solid #eee" mb="7px" pb="5px" justifyContent="space-between">
+                            {comment}
+                            <IconButton minWidth="25px" h="25px" variantColor="red"
+                                icon="delete"
+                                color="#fff"
+                                id={itemKey}
+                                type="button"
+                                onClick={() => DeleteComment(itemKey, comments, comments.indexOf(comment))}>
+                            </IconButton>
+                        </Flex>
+                    )
+                })
             }
-        });
-    }).then(() => {
-        //join table
-        items.push({
-            key: doc.id,
-            doc, // DocumentSnapshot
-            task,
-            date,
-            time,
-            tags: tags_arr,
-            done,
-        });
-        this.setState({ items })
-    });
-})
+            <FormControl mt={4} as="form" >
+                <Textarea ref={initialRef} placeholder="Add Comment...." onChange={handelChange} id="comment" value={comment} />
+                <Button mt={1} variantColor="green" type="button" onClick={() => handelSave(comments, itemKey)}>ADD</Button>
+            </FormControl>
+        </ModalBody>
+
+        <ModalFooter>
+        </ModalFooter>
+    </ModalContent>
+</Modal>

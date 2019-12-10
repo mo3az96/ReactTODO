@@ -4,7 +4,8 @@ import TodoItems from '../TodoItems/todoItems';
 import AddItems from '../AddItems/addItems';
 import FilterElements from '../FilterElements/FilterElements';
 import firebase from '../Firebase'
-import { ThemeProvider, CSSReset, Box, Heading } from "@chakra-ui/core";
+import { ThemeProvider, CSSReset, Box, Heading, Flex } from "@chakra-ui/core";
+import AddModal from '../modal/modal';
 
 
 class Loggedin extends Component {
@@ -29,37 +30,38 @@ class Loggedin extends Component {
             this.auth.onAuthStateChanged((user) => {
                 let tag_id_arr = [];
                 let tags_arr = [];
-                const { task, date, time, done, assignTo } = doc.data();
-                if (assignTo === user.uid) {
-                    //join table
-                    this.tasks_tags.where('task_id', '==', doc.id).get().then((snapshot) => {
+                const { task, date, time, done, assignTo,comments } = doc.data();
+                //join table
+                this.tasks_tags.where('task_id', '==', doc.id).get().then((snapshot) => {
+                    snapshot.forEach(doc => {
+                        tag_id_arr.push(doc.data().tag_id);
+                    });
+                    this.tags.get().then((snapshot) => {
+
                         snapshot.forEach(doc => {
-                            tag_id_arr.push(doc.data().tag_id);
+
+                            if (tag_id_arr.includes(doc.id)) {
+
+                                tags_arr.push(doc.data().tag);
+                            }
                         });
-                        this.tags.get().then((snapshot) => {
-
-                            snapshot.forEach(doc => {
-
-                                if (tag_id_arr.includes(doc.id)) {
-
-                                    tags_arr.push(doc.data().tag);
-                                }
-                            });
-                        }).then(() => {
-                            //join table
-                            items.push({
-                                key: doc.id,
-                                doc, // DocumentSnapshot
-                                task,
-                                date,
-                                time,
-                                tags: tags_arr,
-                                done,
-                            });
-                            this.setState({ items })
+                    }).then(() => {
+                        //join table
+                        items.push({
+                            key: doc.id,
+                            doc, // DocumentSnapshot
+                            task,
+                            date,
+                            time,
+                            tags: tags_arr,
+                            done,
+                            assignTo,
+                            comments
                         });
-                    })
-                }
+                        this.setState({ items })
+                    });
+                })
+
             })
         });
 
@@ -169,7 +171,7 @@ class Loggedin extends Component {
                 date: item.date,
                 time: item.time,
                 done: item.done,
-                assignTo: user.uid
+                assignTo: item.assignTo
             });
         })
 
@@ -274,13 +276,17 @@ class Loggedin extends Component {
             <ThemeProvider>
                 <CSSReset />
                 <Box w="90%" mx="auto" >
-                    <Heading mt="25px" className="text-center" textAlign="center">Add Item</Heading>
+                    {/* <Heading mt="25px" className="text-center" textAlign="center">Add Item</Heading>
                     <Box className="content">
                         <AddItems addItem={this.addItem} />
-                    </Box>
+                    </Box> */}
+
 
                     <Box className="content">
-                        <Heading mt="25px" className="text-center" textAlign="center">Todo List</Heading>
+                        <Flex alignItems="center" justifyContent="space-between" mb="50px" mt="25px">
+                            <Heading className="text-center" textAlign="center">Todo List</Heading>
+                            <AddModal addItem={this.addItem} />
+                        </Flex>
                         <FilterElements filter={this.filter} filterSearch={this.filterSearch} allTags={this.state.allTags} />
                         <TodoItems items={this.state.items} handlefilter={this.handlefilter} deleteItem={this.deleteItem} itemDone={this.itemDone} handelDateSort={this.handelDateSort} handelNameSort={this.handelNameSort} />
                     </Box>

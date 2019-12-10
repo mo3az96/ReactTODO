@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import './App.css'
 import Sign from './Components/Auth/sign';
-import admin from './Components/Auth/admin';
 import Loggedin from './Components/logedin/loggedin';
 import firebase from './Components/Firebase'
 import Nav from './Components/nav';

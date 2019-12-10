@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+
 import {
     ThemeProvider,
     CSSReset,
@@ -15,7 +16,8 @@ export class AddItems extends Component {
         date: "",
         time: "",
         tags: [],
-        done: false
+        done: false,
+        assignTo: ""
     }
     handelChange = (e) => {
         this.setState({
@@ -35,7 +37,8 @@ export class AddItems extends Component {
                 date: "",
                 time: "",
                 tags: [],
-                done: false
+                done: false,
+                assignTo: ""
             })
         }
 
@@ -46,12 +49,13 @@ export class AddItems extends Component {
             <ThemeProvider>
                 <CSSReset />
                 <Box mt="25px" mx="auto" textAlign="center">
-                    <Flex as="form" onSubmit={this.handelSave}>
-                        <Input type="text" placeholder="Enter Task ...." id="task" onChange={this.handelChange} value={this.state.task} />
-                        <Input ml="15px" type="date" placeholder="Enter Date ...." id="date" onChange={this.handelChange} value={this.state.date} />
-                        <Input ml="15px" type="time" placeholder="Enter time ...." id="time" onChange={this.handelChange} value={this.state.time} />
-                        <Input ml="15px" as="input" type="text" placeholder="Enter tags ...." id="tags" onChange={this.handelChange} value={this.state.tags} />
-                        <Button w="150px" ml="15px" variantColor="blue" type="submit">Add</Button>
+                    <Flex as="form" onSubmit={this.handelSave} flexDirection="column">
+                        <Input mb="15px" type="text" placeholder="Enter Task ...." id="task" onChange={this.handelChange} value={this.state.task} />
+                        <Input mb="15px" type="date" placeholder="Enter Date ...." id="date" onChange={this.handelChange} value={this.state.date} />
+                        <Input mb="15px" type="time" placeholder="Enter time ...." id="time" onChange={this.handelChange} value={this.state.time} />
+                        <Input mb="15px" as="input" type="text" placeholder="Enter tags ...." id="tags" onChange={this.handelChange} value={this.state.tags} />
+                        <Input mb="15px" as="input" type="text" placeholder="Enter user Name ...." id="assignTo" onChange={this.handelChange} />
+                        <Button w="150px" variantColor="blue" type="submit" mx="auto">Add</Button>
                     </Flex>
                 </Box>
             </ThemeProvider>

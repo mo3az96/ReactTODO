@@ -20,7 +20,8 @@
     "react-router-dom": "^5.1.2",
     "react-scripts": "3.2.0",
     "react-select": "^3.0.8",
-    "react-select-picker": "0.0.7"
+    "react-select-picker": "0.0.7",
+    "react-use-disclosure": "^1.1.2"
   },
   "scripts": {
     "predeploy": "npm run build",
