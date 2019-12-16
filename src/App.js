@@ -49,7 +49,6 @@ class App extends Component {
           {uploader}
 
         </BrowserRouter>
-        <div>123</div>
       </>
     );
 
