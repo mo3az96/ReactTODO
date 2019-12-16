@@ -39,7 +39,7 @@ const Nav = (props) => {
         <ThemeProvider>
             <CSSReset />
             <Flex alignItems="center" justifyContent="space-between" mx="auto" backgroundColor="#f8f9fa" p="5px 50px">
-                <Heading size="2xl" className="logo" color="rgba(0,0,0,0.9)">Todo App</Heading>
+                <Heading size="2xl" className="logo" color="rgba(0,0,0,0.9)">Todo Apps</Heading>
 
                 <ThemeProvider>
                     {users}
