@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { ThemeProvider, CSSReset, Icon, Flex } from "@chakra-ui/core";
+import { ThemeProvider, CSSReset, Flex } from "@chakra-ui/core";
 import firebase from '../Firebase'
 import 'font-awesome/css/font-awesome.min.css';
 
@@ -35,7 +35,7 @@ export class Sign extends Component {
                     m="auto"
                     mt="250px"
                 >
-                    Signin With <Icon as="i" className="fa fa-facebook-square" fontSize="25px"></Icon >
+                    Signin With <i className="fa fa-facebook-square" fontSize="25px"></i>
                 </Flex>
             </ThemeProvider>
         );

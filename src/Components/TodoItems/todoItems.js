@@ -8,7 +8,6 @@ class TodoItems extends Component {
     ref = firebase.firestore().collection('tasks');
     DeleteComment = (id, comments, index) => {
         comments.splice(index, 1);
-        console.log(comments);
         this.ref.doc(id).update({
             comments: comments
         }).then(() => {
@@ -21,7 +20,8 @@ class TodoItems extends Component {
 
 
     state = {
-        comment: ""
+        comment: "",
+        load: true
     }
 
     handelChange = (e) => {
@@ -30,24 +30,40 @@ class TodoItems extends Component {
         })
     }
     handelSave = (comments, id) => {
-        //console.log(unique);
+
         if (this.state.comment === "") {
             alert("Add comment")
         } else {
+            this.setState({
+                load: false
+            })
             comments.push(this.state.comment)
-            console.log(comments);
 
-            // this.ref.doc(id).update({
-            //     comments: comments
-            // }).then(() => {
-            //     this.setState({
-            //         comment: ""
-            //     })
-            // });
+            this.ref.doc(id).update({
+                comments: comments
+            }).then(() => {
+                this.setState({
+                    comment: "",
+                    load: true
+                })
+
+            });
         }
-
     }
 
+    handeledit = (e, comments, id, comment) => {
+        //comments.push(e)
+        let i = comments.indexOf(comment)
+        comments.splice(i, 1);
+        comments.push(e);
+        this.ref.doc(id).update({
+            comments: comments
+        }).then(() => {
+            this.setState({
+                comment: ""
+            })
+        });
+    }
 
 
     render() {
@@ -56,10 +72,20 @@ class TodoItems extends Component {
         let ListItems = count ? (
             items.map(item => {
                 return (
+
                     <Flex fontSize="lg" fontWeight="medium" key={item.key} className={item.done ? "done" : "undone"}>
 
                         {/* <Flex py="7px" border="1px" borderRight="0" borderTop="0" borderColor="gray.200" w="20%" h="50px" alignItems="center" justifyContent="center" className="task">{item.task}</Flex> */}
-                        <Comment name={item.task} comment={this.state.comment} comments={item.comments} itemKey={item.key} handelChange={this.handelChange} DeleteComment={this.DeleteComment} handelSave={this.handelSave} />
+                        <Comment
+                            name={item.task}
+                            comment={this.state.comment}
+                            load={this.state.load}
+                            comments={item.comments}
+                            itemKey={item.key}
+                            handelChange={this.handelChange}
+                            handeledit={this.handeledit}
+                            DeleteComment={this.DeleteComment}
+                            handelSave={this.handelSave} />
                         <Flex py="7px" border="1px" borderRight="0" borderTop="0" borderColor="gray.200" w="10%" h="50px" alignItems="center" justifyContent="center" className="date">{item.date}</Flex>
                         <Flex py="7px" border="1px" borderRight="0" borderTop="0" borderColor="gray.200" w="10%" h="50px" alignItems="center" justifyContent="center" className="time">{item.time}</Flex>
                         <Flex py="7px" border="1px" borderRight="0" borderTop="0" borderColor="gray.200" w="20%" h="50px" alignItems="center" justifyContent="center" className="tags" id="tags">

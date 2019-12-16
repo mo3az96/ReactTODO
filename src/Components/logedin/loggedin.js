@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import _ from 'lodash';
 import TodoItems from '../TodoItems/todoItems';
-import AddItems from '../AddItems/addItems';
 import FilterElements from '../FilterElements/FilterElements';
 import firebase from '../Firebase'
 import { ThemeProvider, CSSReset, Box, Heading, Flex } from "@chakra-ui/core";
@@ -11,125 +10,54 @@ import AddModal from '../modal/modal';
 class Loggedin extends Component {
 
     ref = firebase.firestore().collection('tasks');
-    tags = firebase.firestore().collection('tags');
-    tasks_tags = firebase.firestore().collection('tasks_tags');
     auth = firebase.auth()
     unsubscribe = null;
-    tags_unsubscribe = null;
     state = {
         items: [],
-        currentitems: [],
         allTags: []
     }
     ///////////
     onCollectionUpdate = (querySnapshot) => {
         let items = [];
+        let allTags = [];
 
         querySnapshot.forEach((doc) => {
-
             this.auth.onAuthStateChanged((user) => {
-                let tag_id_arr = [];
-                let tags_arr = [];
-                const { task, date, time, done, assignTo,comments } = doc.data();
+                const { task, date, time, done, assignTo, comments, tags } = doc.data();
                 //join table
-                this.tasks_tags.where('task_id', '==', doc.id).get().then((snapshot) => {
-                    snapshot.forEach(doc => {
-                        tag_id_arr.push(doc.data().tag_id);
-                    });
-                    this.tags.get().then((snapshot) => {
-
-                        snapshot.forEach(doc => {
-
-                            if (tag_id_arr.includes(doc.id)) {
-
-                                tags_arr.push(doc.data().tag);
-                            }
-                        });
-                    }).then(() => {
-                        //join table
-                        items.push({
-                            key: doc.id,
-                            doc, // DocumentSnapshot
-                            task,
-                            date,
-                            time,
-                            tags: tags_arr,
-                            done,
-                            assignTo,
-                            comments
-                        });
-                        this.setState({ items })
-                    });
-                })
-
+                items.push({
+                    key: doc.id,
+                    doc, // DocumentSnapshot
+                    task,
+                    date,
+                    time,
+                    done,
+                    assignTo,
+                    comments,
+                    tags
+                });
+                allTags.push(...tags);
+                allTags = _.uniq(allTags);
+                this.setState({ items })
+                this.setState({ allTags })
+                // console.log(items)
             })
         });
 
     }
     ///////////
-    onCollectionUpdateTags = (querySnapshot) => {
-        let allTags = [];
-        let tagsid = [];
-        this.tasks_tags.get().then((snapshot) => {
-            snapshot.forEach(doc => {
-                tagsid.push(doc.data().tag_id);
-            });
-        }).then(() => {
-            querySnapshot.forEach((doc) => {
-                const { tag } = doc.data();
-                if (tagsid.includes(doc.id)) {
-                    allTags.push({
-                        key: doc.id,
-                        doc, // DocumentSnapshot
-                        tag,
-                    });
-                }
-
-            });
-            this.setState({
-                allTags
-            });
-        });
-
-
-
-
-    }
-    ///////////
-    ///////////
     componentDidMount() {
         this.unsubscribe = this.ref.onSnapshot(this.onCollectionUpdate);
-        this.tags_unsubscribe = this.tags.onSnapshot(this.onCollectionUpdateTags);
-        this.test()
-    }
-    ///////////
-    test = () => {
-        let items = this.state.items;
-        let currentitems = this.state.currentitems;
-        items.map(item => {
-            currentitems.push(item);
-            return 1;
-        });
-        this.setState({ currentitems })
     }
     ///////////
     previousState = () => {
-        this.tags_unsubscribe = this.tags.onSnapshot(this.onCollectionUpdateTags);
+        this.ref = firebase.firestore().collection('tasks');
         let items = this.ref.onSnapshot(this.onCollectionUpdate);
         this.setState({ items })
     }
     ///////////
     deleteItem = (id) => {
         this.ref.doc(id).delete();
-        this.tasks_tags.get().then((snapshot) => {
-            snapshot.forEach(doc => {
-                if (doc.data().task_id === id) {
-                    this.tasks_tags.doc(doc.id).delete()
-                    this.tags.doc(doc.data().tag_id).delete()
-                }
-            });
-        });
-        console.log(id);
         this.previousState()
     }
     ///////////
@@ -156,14 +84,7 @@ class Loggedin extends Component {
     }
     ///////////
     addItem = (item) => {
-        let getTags = item.tags.split(', '); // split string on comma space
-
-
-
-        getTags.forEach(tag => {
-            this.tags.add({ tag: tag })
-
-        });
+        let tags = item.tags.split(', '); // split string on comma space
 
         this.auth.onAuthStateChanged((user) => {
             this.ref.add({
@@ -171,36 +92,10 @@ class Loggedin extends Component {
                 date: item.date,
                 time: item.time,
                 done: item.done,
-                assignTo: item.assignTo
+                assignTo: item.assignTo,
+                tags: tags
             });
         })
-
-
-
-        ////////////////////////tasks_tags////////////////
-        let task_tag = []
-        this.ref.where('task', '==', item.task).get().then((snapshot) => {
-            snapshot.forEach(doc => {
-                task_tag.push(doc.id);
-            });
-        }).then(() => {
-            this.tags.where('tag', 'in', getTags).get().then((snapshot) => {
-                snapshot.forEach(doc => {
-                    task_tag.push(doc.id);
-                });
-            }).then(() => {
-                for (let i = 1; i < task_tag.length; i++) {
-                    this.tasks_tags.add({
-                        tag_id: task_tag[i],
-                        task_id: task_tag[0],
-                    });
-                    // console.log("task_id" + task_tag[0] + " , " + "tag_id" + task_tag[i]);
-                }
-            }).then(() => {
-                this.previousState();
-            });
-        });
-
     }
     ///////////
     loop = (key, val) => {
@@ -214,7 +109,6 @@ class Loggedin extends Component {
         switch (targetId) {
             case "all":
                 this.previousState();
-
                 break;
             case "done":
                 this.loop('done', true)
@@ -229,46 +123,21 @@ class Loggedin extends Component {
     ///////////
     handlefilter = (e) => {
         let tag_name = e.target.text.substring(1);
-        let x = []
-        this.tags.where('tag', '==', tag_name).get().then((snapshot) => {
-            snapshot.forEach(doc => {
-                x.push(doc.id);
-            });
-            console.log(x)
-            this.searchTags(x)
-        });
+        this.ref = firebase.firestore().collection('tasks').where('tags', 'array-contains', tag_name);
+        let items = this.ref.onSnapshot(this.onCollectionUpdate);
+        this.setState({ items })
     }
     ///////////
     filterSearch = (e) => {
         if (e != null) {
+            let x = _.map(e, 'label');
 
-            let x = _.map(e, 'value');
-            this.searchTags(x)
-            // console.log(x);
+            this.ref = firebase.firestore().collection('tasks').where('tags', 'array-contains-any', x);
+            let items = this.ref.onSnapshot(this.onCollectionUpdate);
+            this.setState({ items })
         } else {
             this.previousState();
         }
-    }
-    ///////////
-    searchTags = (val) => {
-        let arr = [];
-        let items = this.state.items;
-        let items2 = [];
-        this.tasks_tags.where('tag_id', 'in', val).get().then((snapshot) => {
-            snapshot.forEach(doc => {
-                arr.push(doc.data().task_id);
-            });
-            items.forEach(kk => {
-                if (arr.includes(kk.key)) {
-                    console.log(kk);
-                    console.log(kk.key);
-                    items2.push(kk);
-                }
-            });
-            this.setState({ items: items2 })
-        }).catch(function (error) {
-            console.log("Error getting documents: ", error);
-        });
     }
     ///////////////////////////////////////////////////////
     render() {

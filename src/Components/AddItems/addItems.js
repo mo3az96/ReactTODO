@@ -17,7 +17,8 @@ export class AddItems extends Component {
         time: "",
         tags: [],
         done: false,
-        assignTo: ""
+        assignTo: "",
+        comments: ""
     }
     handelChange = (e) => {
         this.setState({

@@ -1,38 +1,49 @@
 import React from 'react';
 import {
-    Modal,
-    ModalOverlay,
-    ModalContent,
-    ModalHeader,
-    ModalFooter,
-    ModalBody,
-    ModalCloseButton,
     Button,
+    Box,
     FormControl,
     Textarea,
-    FormLabel,
-    useDisclosure,
     Flex,
     IconButton,
-    Editable, EditableInput, EditablePreview,
-    Drawer,
-    DrawerBody,
-    DrawerFooter,
-    DrawerHeader,
-    DrawerOverlay,
-    DrawerContent,
-    DrawerCloseButton,
+    Editable, EditableInput, EditablePreview, Text
 } from "@chakra-ui/core";
+
+
 function Comment(props) {
-    const { name, comments, handelChange, DeleteComment, itemKey, handelSave, comment } = props;
-    const { isOpen, onOpen, onClose } = useDisclosure();
-    const btnRef = React.useRef();
+    const { name, comments, handelChange, DeleteComment, itemKey, handelSave, comment, handeledit, load } = props;
+    let drawer = false;
+    console.log(load);
+
+
+
+    const onOpen = () => {
+        let side = document.getElementById(itemKey);
+        let dr = document.getElementsByClassName("drawer")
+        // let overlay = document.getElementById("overlay");
+
+        if (!drawer) {
+            // overlay.style.display = "block";
+            side.style.display = "block";
+            drawer = true
+        } else {
+            // overlay.style.display = "none";
+            for (let i = 0; i < dr.length; i++) {
+                dr[i].style.display = "none";
+            }
+            drawer = false
+        }
+
+    }
+    const ondefault = (e) => {
+        e.stopPropagation()
+    }
 
     return (
         <>
 
-            <Button onClick={onOpen}
-                ref={btnRef}
+            <Button
+                onClick={onOpen}
                 bg="transparent"
                 py="7px" border="1px"
                 borderRight="0"
@@ -44,47 +55,44 @@ function Comment(props) {
                 className="task"
                 _hover={{ bg: "transparent" }}
             >
+
                 {name}
+
             </Button>
+            <Box pos="fixed" w="100%" zIndex={1} right="0" top="0" h="100%" bg="#0000004d" d="none" id={itemKey} className="drawer" onClick={onOpen}>
+                <Box pos="fixed" w="300px" zIndex={2} right="0" top="0" h="100%" bg="#fff" py="25px" overflow="hidden" onClick={ondefault}>
+                    <Text mb="50px" mx="auto" textAlign="center" fontSize="2xl"> {name}</Text>
 
-            <Drawer
-                isOpen={isOpen}
-                placement="right"
-                onClose={onClose}
-                finalFocusRef={btnRef}
-            >
-                <DrawerOverlay />
-                <DrawerContent>
-                    <DrawerCloseButton />
-                    <DrawerHeader>Create your account</DrawerHeader>
+                    {
+                        [...new Set(comments)].map(comment => {
+                            return (
+                                <Flex key={Math.random()} borderBottom="1px solid #eee" mb="7px" pb="5px" justifyContent="space-between" w="250px" mx="auto">
+                                    <Editable defaultValue={comment} onSubmit={(e) => handeledit(e, comments, itemKey, comment)}>
+                                        <EditablePreview />
+                                        <EditableInput />
+                                    </Editable>
+                                    <IconButton minWidth="25px" h="25px" variantColor="red"
+                                        icon="delete"
+                                        color="#fff"
+                                        id={itemKey}
+                                        type="button"
+                                        onClick={() => DeleteComment(itemKey, comments, comments.indexOf(comment))}>
+                                    </IconButton>
+                                </Flex>
+                            )
+                        })
+                    }
+                    <FormControl mt={4} as="form" w="250px" mx="auto" >
+                        <Textarea placeholder="Add Comment...." onChange={handelChange} id="comment" value={comment} />
+                        <Button mt={1} variantColor="green"
+                            type="button"
 
-                    <DrawerBody>
-                        {
-                            [...new Set(comments)].map(comment => {
-                                return (
-                                    <Flex key={Math.random()} borderBottom="1px solid #eee" mb="7px" pb="5px" justifyContent="space-between">
-                                        {comment}
-                                        <IconButton minWidth="25px" h="25px" variantColor="red"
-                                            icon="delete"
-                                            color="#fff"
-                                            id={itemKey}
-                                            type="button"
-                                            onClick={() => DeleteComment(itemKey, comments, comments.indexOf(comment))}>
-                                        </IconButton>
-                                    </Flex>
-                                )
-                            })
-                        }
-                    </DrawerBody>
+                            {...(!load && { isLoading: true })}
+                            onClick={() => handelSave(comments, itemKey)}>ADD</Button>
+                    </FormControl>
+                </Box>
+            </Box>
 
-                    <DrawerFooter>
-                        <FormControl mt={4} as="form" >
-                            <Textarea ref={initialRef} placeholder="Add Comment...." onChange={handelChange} id="comment" value={comment} />
-                            <Button mt={1} variantColor="green" type="button" onClick={() => handelSave(comments, itemKey)}>ADD</Button>
-                        </FormControl>
-                    </DrawerFooter>
-                </DrawerContent>
-            </Drawer>
 
 
 

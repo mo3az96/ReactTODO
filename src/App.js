@@ -4,8 +4,7 @@ import Sign from './Components/Auth/sign';
 import Loggedin from './Components/logedin/loggedin';
 import firebase from './Components/Firebase'
 import Nav from './Components/nav';
-import { Route, BrowserRouter } from 'react-router-dom'
-
+import { Route, BrowserRouter } from 'react-router-dom';
 //import { ThemeProvider, CSSReset } from "@chakra-ui/core";
 
 
@@ -23,8 +22,6 @@ class App extends Component {
   checkUser = () => {
     this.auth.onAuthStateChanged((user) => {
       if (user) {
-        console.log(user.uid);
-
         this.setState({ user })
       } else {
         this.setState({ user })
@@ -52,7 +49,10 @@ class App extends Component {
           {uploader}
 
         </BrowserRouter>
+        {/* <Drawer /> */}
 
+
+        <div>123</div>
       </>
     );
 

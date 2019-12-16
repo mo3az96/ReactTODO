@@ -4,13 +4,9 @@ import {
     ModalOverlay,
     ModalContent,
     ModalHeader,
-    ModalFooter,
     ModalBody,
     ModalCloseButton,
     Button,
-    FormControl,
-    Input,
-    FormLabel,
     useDisclosure,
     Heading
 } from "@chakra-ui/core";

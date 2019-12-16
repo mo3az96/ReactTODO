@@ -5,10 +5,9 @@ import Select from 'react-select'
 const FilterElements = (props) => {
     const { filter, filterSearch, allTags } = props;
     let ListTags = allTags.map((label) => {
-        let key = label.key;
-        let val = label.tag;
+        // console.log(label)
         return (
-            { label: val, value: key }
+            { label: label, value: "tag" }
         )
     });
 
