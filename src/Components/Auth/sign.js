@@ -7,39 +7,39 @@ import 'font-awesome/css/font-awesome.min.css';
 
 export class Sign extends Component {
 
-    auth = firebase.auth()
-    provider = new firebase.auth.FacebookAuthProvider();
-    hsndelSignin = () => {
-        this.auth.signInWithPopup(this.provider).then(function (result) {
-            var user = result.user;
-            console.log(user)
-        })
-    }
+    // auth = firebase.auth()
+    // provider = new firebase.auth.FacebookAuthProvider();
+    // hsndelSignin = () => {
+    //     this.auth.signInWithPopup(this.provider).then(function (result) {
+    //         var user = result.user;
+    //         console.log(user)
+    //     })
+    // }
 
-    state = {
-        email: "",
-        password: ""
-    }
-    handelChange = (e) => {
-        this.setState({
-            [e.target.id]: e.target.value
-        })
+    // state = {
+    //     email: "",
+    //     password: ""
+    // }
+    // handelChange = (e) => {
+    //     this.setState({
+    //         [e.target.id]: e.target.value
+    //     })
 
-    }
-    handelSave = (e) => {
-        e.preventDefault();
-        if (this.state.email === "" || this.state.password === "") {
-            alert("Fill The Data ")
-        } else {
-            this.auth.signInWithEmailAndPassword(this.state.email, this.state.password).then((cred) => {
-                this.setState({
-                    email: "",
-                    password: ""
-                })
-            });
-        }
+    // }
+    // handelSave = (e) => {
+    //     e.preventDefault();
+    //     if (this.state.email === "" || this.state.password === "") {
+    //         alert("Fill The Data ")
+    //     } else {
+    //         this.auth.signInWithEmailAndPassword(this.state.email, this.state.password).then((cred) => {
+    //             this.setState({
+    //                 email: "",
+    //                 password: ""
+    //             })
+    //         });
+    //     }
 
-    }
+    // }
 
 
     render() {
@@ -49,8 +49,8 @@ export class Sign extends Component {
                 <CSSReset />
 
                 <Flex w="350px" mx="auto" mt="150px" as="form" onSubmit={this.handelSave} flexDirection="column">
-                    <Input mb="15px" type="text" placeholder="Enter Email ...." id="email" onChange={this.handelChange} value={this.state.email} />
-                    <Input mb="15px" type="password" placeholder="Enter Password ...." id="password" onChange={this.handelChange} value={this.state.password} />
+                    <Input mb="15px" type="text" placeholder="Enter Email ...." id="email" />
+                    <Input mb="15px" type="password" placeholder="Enter Password ...." id="password" />
                     <Button w="150px" variantColor="blue" type="submit" mx="auto">Login</Button>
                 </Flex>
 
