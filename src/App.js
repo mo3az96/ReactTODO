@@ -39,17 +39,16 @@ class App extends Component {
     });
   }
   render() {
-    // let uploader = this.state.user ?
-    //   <Route exact path="/" component={Loggedin} /> : <Route exact path="/" component={Sign} />
+    let uploader = this.state.user ?
+      <Route exact path="/" component={Loggedin} /> : <Route exact path="/" component={Sign} />
 
     return (
       <>
-        {/* <Nav user={this.state.user} handelLagout={this.handelLagout} />
+        <Nav user={this.state.user} handelLagout={this.handelLagout} />
         <BrowserRouter>
           {uploader}
 
-        </BrowserRouter> */}
-        <Sign />
+        </BrowserRouter>
       </>
     );
 
